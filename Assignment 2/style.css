@@ -1,0 +1,14 @@
+h1,
+h2,
+h3,
+p {
+    color: #ffffff;
+}
+
+form, input, label {
+    color: white !important;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+}
