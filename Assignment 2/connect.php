@@ -15,6 +15,7 @@
     $query2 = "CREATE TABLE IF NOT EXISTS `myfriends` (
                     friend_id1 INT NOT NULL,
                     friend_id2 INT NOT NULL,
+                    PRIMARY KEY (friend_id1, friend_id2),
                     FOREIGN KEY (friend_id1) REFERENCES friends(friend_id),
                     FOREIGN KEY (friend_id2) REFERENCES friends(friend_id),
                     CONSTRAINT `check_duplication` CHECK (friend_id1 != friend_id2)

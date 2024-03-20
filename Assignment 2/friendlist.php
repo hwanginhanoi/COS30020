@@ -1,13 +1,26 @@
 <?php
     include_once("connect.php");
 
+    function fetch_num_of_friends() {
+        $query = " SELECT COUNT(*) AS count_friends FROM myfriends WHERE friend_id1 = " . $_SESSION["friend_id"] . " OR friend_id2 = " . $_SESSION["friend_id"] . ";";
+    }
+
     session_start();
 
     if (!isset($_SESSION["friend_id"]) || $_SESSION["friend_email"] || $_SESSION["profile_name"] !== true) {
+        $friend_id = $_SESSION["friend_id"];
+        $profile_name = $_SESSION["profile_name"];
+
+
+
+        $row = mysqli_fetch_assoc($result);
+        $res_count = (int)$row["count_friends"];
+
+
 
     }
     else {
-
+        header("location: signin.php");
     }
 ?>
 
@@ -30,7 +43,7 @@
                 <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
                     <div class="w-full md:w-1/2">
                         <h1 class="text-2xl font-bold leading-tight tracking-tight text-white">
-                            <?php echo $_SESSION["profile_name"] ?>'s Friend List Page
+                            <?php echo $profile_name ?>'s Friend List Page
                         </h1>
                     </div>
                     <div class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
