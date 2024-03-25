@@ -17,8 +17,6 @@
                 echo "<p style='color:red'>Guestbook is empty!</p>";
                 exit;
             } else {
-//                $data = file_get_contents($filename);
-//                $data = fread($handle, filesize($filename));
                 $handle = fopen($filename, "r");
                 $data = "";
                 while (!feof($handle)) {
@@ -28,6 +26,14 @@
                 echo "<p>Guest book entries:</p>
                       <pre>$data</pre>";
                 fclose($handle);
+
+//                $data = file_get_contents($filename);
+//                if ($data === false) {
+//                    echo "<p style='color:red'>Failed to read guestbook file!</p>";
+//                } else {
+//                    echo "<p>Guest book entries:</p>
+//                      <pre>$data</pre>";
+//                }
             }
         ?>
     </body>

@@ -11,12 +11,12 @@
         <h1>Lab05 Task 2 - Guestbook</h1>
         <?php // read the comments for hints on how to answer each item
             umask(0007);
-            $dir = "";
+            $dir = "../../data/lab05";
             if (!file_exists($dir)) {
-                mkdir($dir, 0277, true);
+                mkdir($dir, 02770);
             }
 
-            if (isset($_POST["firstname"]) and isset($_POST["lastname"]) ) { // check if both form data exists
+            if (!empty($_POST["firstname"]) and !empty($_POST["lastname"]) ) { // check if both form data exists
                 $firstname = $_POST["firstname"]; // obtain the form item data
                 $lastname = $_POST["lastname"]; // obtain the form quantity data
 
