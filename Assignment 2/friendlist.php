@@ -2,7 +2,7 @@
     include_once("connect.php");
 
     function fetch_num_of_friends() {
-        $query = " SELECT COUNT(*) AS count_friends FROM myfriends WHERE friend_id1 = " . $_SESSION["friend_id"] . " OR friend_id2 = " . $_SESSION["friend_id"] . ";";
+        $query = "SELECT COUNT(*) AS count_friends FROM myfriends WHERE friend_id1 = " . $_SESSION["friend_id"] . " OR friend_id2 = " . $_SESSION["friend_id"] . ";";
     }
 
     session_start();
@@ -10,12 +10,8 @@
     if (!isset($_SESSION["friend_id"]) || $_SESSION["friend_email"] || $_SESSION["profile_name"] !== true) {
         $friend_id = $_SESSION["friend_id"];
         $profile_name = $_SESSION["profile_name"];
-
-
-
-        $row = mysqli_fetch_assoc($result);
-        $res_count = (int)$row["count_friends"];
-
+        $query = "SELECT friend FROM myfriends WHERE friend_id1 = " . $_SESSION["friend_id"] . " OR friend_id2 = " . $_SESSION["friend_id"] . ";";
+        $result = mysqli_query($conn, $query);
 
 
     }
@@ -106,7 +102,7 @@
                     <ul class="inline-flex items-stretch -space-x-px">
                         <li>
                             <a href="#"
-                               class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                               class="flex items-center justify-center h-full py-1.5 px-3 ml-0 rounded-l-lg border bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white">
                                 <span class="sr-only">Previous</span>
                                 <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20"
                                      xmlns="http://www.w3.org/2000/svg">
@@ -118,7 +114,7 @@
                         </li>
                         <li>
                             <a href="#"
-                               class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+                               class="flex items-center justify-center h-full py-1.5 px-3 leading-tight rounded-r-lg border bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white">
                                 <span class="sr-only">Next</span>
                                 <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20"
                                      xmlns="http://www.w3.org/2000/svg">
