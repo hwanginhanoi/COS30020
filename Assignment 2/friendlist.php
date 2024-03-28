@@ -1,21 +1,48 @@
 <?php
     include_once("connect.php");
 
-    function fetch_num_of_friends() {
-        $query = "SELECT COUNT(*) AS count_friends FROM myfriends WHERE friend_id1 = " . $_SESSION["friend_id"] . " OR friend_id2 = " . $_SESSION["friend_id"] . ";";
-    }
 
     session_start();
 
     if (!isset($_SESSION["friend_id"]) || $_SESSION["friend_email"] || $_SESSION["profile_name"] !== true) {
         $friend_id = $_SESSION["friend_id"];
         $profile_name = $_SESSION["profile_name"];
-        $query = "SELECT friend FROM myfriends WHERE friend_id1 = " . $_SESSION["friend_id"] . " OR friend_id2 = " . $_SESSION["friend_id"] . ";";
-        $result = mysqli_query($conn, $query);
+
+        $num_of_friends_query = "SELECT COUNT(*) AS num_of_friends
+                                FROM (
+                                    SELECT friends.friend_id, friends.profile_name
+                                    FROM friends
+                                    INNER JOIN myfriends
+                                    ON (myfriends.friend_id1 = $friend_id AND myfriends.friend_id2 = friends.friend_id)
+                                    OR (myfriends.friend_id2 = $friend_id AND myfriends.friend_id1 = friends.friend_id)
+                                ) AS subquery;";
+
+        $num_of_friends_result = @mysqli_query($conn, $num_of_friends_query);
+        $row = mysqli_fetch_assoc($num_of_friends_result);
+        $num_of_friends = (int)$row['num_of_friends'];
 
 
-    }
-    else {
+
+        if (!isset ($_GET['page']) ) {
+            $page = 1;
+        } else {
+            $page = $_GET['page'];
+        }
+
+        $limit = 5;
+        $offset = ($page * $limit) - $limit;
+        $number_of_page = ceil ($num_of_friends / $limit);
+
+        $friends_query = "SELECT friends.friend_id, friends.profile_name
+                    FROM friends
+                    INNER JOIN myfriends
+                    ON myfriends.friend_id1 = $friend_id AND myfriends.friend_id2 = friends.friend_id
+                    OR myfriends.friend_id2 = $friend_id AND myfriends.friend_id1 = friends.friend_id
+                    ORDER BY friends.profile_name
+                    LIMIT $limit
+                    OFFSET $offset";
+        $result = @mysqli_query($conn, $friends_query);
+    } else {
         header("location: signin.php");
     }
 ?>
@@ -76,18 +103,22 @@
                     <table class="w-full text-sm text-left text-gray-400">
                         <thead class="text-xs uppercase bg-gray-700 text-gray-400">
                         <tr>
-                            <th scope="col" class="px-4 py-3">Product name</th>
+                            <th scope="col" class="px-4 py-3">Profile name</th>
                             <th scope="col" class="px-4 py-3">Category</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr class="border-b border-gray-700">
-                            <th scope="row"
-                                class="px-4 py-3 font-medium whitespace-nowrap text-white">Apple iMac
-                                27&#34;
-                            </th>
-                            <td class="px-4 py-3">PC</td>
-                        </tr>
+                        <?php
+                            if (mysqli_num_rows($result) > 0) {
+                                while ($row = mysqli_fetch_assoc($result)) {
+                                    echo '
+                                        <tr class="border-b border-gray-700">
+                                            <th scope="row" class="px-4 py-3 font-medium whitespace-nowrap text-white">' . $row["profile_name"] . '</th>
+                                            <td class="px-4 py-3"></td>
+                                        </tr>';
+                                }
+                            }
+                        ?>
                         </tbody>
                     </table>
                 </div>
@@ -101,7 +132,7 @@
                 </span>
                     <ul class="inline-flex items-stretch -space-x-px">
                         <li>
-                            <a href="#"
+                            <a href="friendlist.php?page=<?php echo $page - 1; ?>"
                                class="flex items-center justify-center h-full py-1.5 px-3 ml-0 rounded-l-lg border bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white">
                                 <span class="sr-only">Previous</span>
                                 <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20"
@@ -113,7 +144,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="#"
+                            <a href="friendlist.php?page=<?php echo $page + 1; ?>"
                                class="flex items-center justify-center h-full py-1.5 px-3 leading-tight rounded-r-lg border bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white">
                                 <span class="sr-only">Next</span>
                                 <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20"
