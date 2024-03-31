@@ -8,21 +8,26 @@
             $email = trim($_POST['email']);
             $password = $_POST['password'];
 
+            // Validate email input
             if (!validate_email($email)) {
                 $errors['email'] = "Invalid email format";
             }
 
+            // Validate password input
             if (!validate_password($password)) {
                 $errors['password'] = "Invalid password format";
             }
 
+            // Check if email is registered
             if (!validate_email_in_db($email, $conn)) {
                 $errors['email'] = "Email is not registered";
             }
 
+            // If no error than start querying into database to check if the credential matches
             if (!($errors)) {
                 $get_user = @mysqli_query($conn, "SELECT friend_id, friend_email, profile_name FROM friends WHERE friend_email = '$email' AND password = '$password';");
                 if ($get_user) {
+                    // If true than start session variable
                     if (mysqli_num_rows($get_user)) {
                         $user = mysqli_fetch_assoc($get_user);
                         $_SESSION["friend_id"] = $user["friend_id"];
@@ -35,11 +40,11 @@
                 } else {
                 }
             }
-        }
-        else {
+        } else {
             $errors['missing'] = "Missing required fields";
         }
     }
+    @mysqli_close($conn);
 ?>
 
 <!doctype html>
@@ -65,9 +70,10 @@
                         email</label>
                     <input type="text" name="email" id="email"
                            class="border sm:text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500"
-                           placeholder="name@company.com">
+                           placeholder="name@company.com"
+                           value="<?php if (isset($_POST["email"])) echo $_POST["email"]; ?>">
                     <?php if (isset($errors['email'])): ?>
-                    <p class="text-red-500 text-xs mt-1"><?php echo $errors['email']; ?></p>
+                        <p class="text-red-500 text-xs mt-1"><?php echo $errors['email']; ?></p>
                     <?php endif; ?>
                 </div>
                 <div>
@@ -76,19 +82,25 @@
                     <input type="password" name="password" id="password" placeholder="••••••••"
                            class="border sm:text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 focus:ring-blue-500 focus:border-blue-500">
                     <?php if (isset($errors['password'])): ?>
-                    <p class="text-red-500 text-xs mt-1"><?php echo $errors['password']; ?></p>
+                        <p class="text-red-500 text-xs mt-1"><?php echo $errors['password']; ?></p>
                     <?php endif; ?>
                 </div>
-                <div class="text-sm ">
-                    <button type="reset" class="flex text-gray-300 items-center"><span class="material-symbols-outlined">refresh</span>Reset
-                    </button>
+                <div class="grid grid-cols-2 gap-24">
+                    <div class="text-sm">
+                        <button type="reset" class="flex text-gray-300 items-center"><span
+                                    class="material-symbols-outlined">refresh</span>Reset
+                        </button>
+                    </div>
+                    <div class="text-sm flex text-gray-300 items-center">
+                       <a href="index.php">Back to homepage</a>
+                    </div>
                 </div>
                 <button type="submit"
                         class="w-full text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 dark:focus:ring-blue-800">
                     Sign in
                 </button>
                 <?php if (isset($errors['missing'])): ?>
-                <p class="text-red-500 text-xs mt-1"><?php echo $errors['missing']; ?></p>
+                    <p class="text-red-500 text-xs mt-1"><?php echo $errors['missing']; ?></p>
                 <?php endif; ?>
             </form>
         </div>

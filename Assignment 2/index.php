@@ -33,6 +33,68 @@
                class="block transition ease-in-out delay-150 bg-blue-600 hover:-translate-y-1 hover:scale-110 hover:bg-blue-700 duration-300 text-white px-4 py-2 rounded-md text-center">About
                 this
                 Website</a>
+            <?php
+                include_once("connect.php");
+
+                $insert_friends_query = " INSERT INTO friends (friend_email, password, profile_name, date_started, num_of_friends) VALUES 
+                                        ('lukasrossander@weather.com', 'astralis', 'gla1ve', '2024-03-01', 7),
+                                         ('peterrasmussen@astralis.vn', 'dominance', 'dupreeh', '2024-03-01', 7),
+                                         ('emilreif7@denmark.dm', 'complexity', 'magiskb0y', '2024-03-01', 7),
+                                         ('xyp9x@dropbox.com', 'clutch', 'xyp9x', '2024-03-01', 7),
+                                         ('nicolaireedtz@valve.co', 'deptrai', 'dev1ce', '2024-03-01', 7),
+                                         ('dannysorensen@gmail.com', 'vitality', 'z0nic', '2024-03-01', 7),
+                                         ('larsrobl@something.com', 'mentality', 'robl', '2024-03-01', 7),
+                                         ('kevindebruyne@mancity.com', 'manunited', 'kevindebruyne', '2024-03-01', 7),
+                                         ('halland@holland.com', 'erling', 'halland', '2024-03-01', 7),
+                                         ('hwanginhanoi@gmail.com', 'hanoi', 'hwanginhanoi', '2024-03-01', 7);";
+
+                $insert_myfriends_query = "INSERT INTO myfriends (friend_id1, friend_id2) VALUES 
+                                                                                                    (10, 2),
+                                                                                                    (3, 5),
+                                                                                                    (2, 3),
+                                                                                                    (4, 9),
+                                                                                                    (1, 4),
+                                                                                                    (8, 4),
+                                                                                                    (8, 1),
+                                                                                                    (6, 5),
+                                                                                                    (3, 6),
+                                                                                                    (4, 2),
+                                                                                                    (1, 9),
+                                                                                                    (3, 9),
+                                                                                                    (2, 8),
+                                                                                                    (1, 10),
+                                                                                                    (4, 3),
+                                                                                                    (2, 9),
+                                                                                                    (3, 1),
+                                                                                                    (1, 8),
+                                                                                                    (7, 8),
+                                                                                                    (7, 3);";
+                $initial_populate_data = "Populated data successfully";
+
+                $result = $conn->query("SELECT COUNT(*) AS count FROM friends;");
+                $result = mysqli_fetch_assoc($result);
+
+                // Execute populate  SQL
+                if($result["count"] == 0) {
+                    if(!$conn->query($insert_friends_query)) {
+                        $initial_populate_data = "Populated data failed.";
+                    }
+                }
+
+                // Execute populate  SQL
+                $result = $conn->query("SELECT COUNT(*) AS count FROM myfriends;");
+                $result = mysqli_fetch_assoc($result);
+
+                if($result["count"] == 0) {
+                    if(!$conn->query($insert_myfriends_query)) {
+                        $initial_populate_data = "Populated data failed.";
+                    }
+                }
+
+                $conn -> close();
+                echo '<p class="mt-2">' . $initial_schema . '</p>';
+                echo '<p class="mt-2">' . $initial_populate_data . '</p>';
+            ?>
         </div>
     </body>
 </html>

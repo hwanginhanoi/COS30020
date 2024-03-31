@@ -21,5 +21,14 @@
                     CONSTRAINT `check_duplication` CHECK (friend_id1 != friend_id2)
                ) engine=InnoDB";
 
-    mysqli_query($conn, $query1);
-    mysqli_query($conn, $query2);
+
+    $result1 = @mysqli_query($conn, $query1);
+    $result2 = @mysqli_query($conn, $query2);
+
+// Check if both queries were successful
+    if ($result1 && $result2) {
+        $initial_schema = "Table successfully created.";
+    } else {
+        // At least one query failed
+        $initial_schema = "At least one query failed.";
+    }

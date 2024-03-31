@@ -3,38 +3,49 @@
     include("validation.php");
     session_start();
     $errors = [];
+
+    // Check if there is POST action
     if ($_SERVER["REQUEST_METHOD"] === "POST") {
         if (!empty($_POST['email']) &&
             !empty($_POST['name']) &&
             !empty($_POST['password']) &&
             !empty($_POST['confirm_password'])) {
+
+            // Sanitize input
             $email = trim($_POST['email']);
             $name = trim($_POST['name']);
             $password = trim($_POST['password']);
             $confirm_password = trim($_POST['confirm_password']);
 
+            // Validate email
             if (!validate_email($email)) {
                 $errors['email'] = "Invalid email format";
             }
 
+            // Validate name
             if (!validate_profile_name($name)) {
                 $errors['name'] = "Invalid profile name format";
             }
 
+            // Validate password
             if (!validate_password($password)) {
                 $errors['password'] = "Invalid password format";
             }
 
+            // Validate confirm password to match the passwrd
             if ($password != $confirm_password) {
                 $errors['confirm_password'] = "Passwords do not match";
             }
 
+            // Check if email is registered, if true than error
             if (validate_email_in_db($email, $conn)) {
                 $errors['email'] = "Email already registered";
             }
 
+            // If no error start inserting the value
             if (!($errors)) {
-                if (@mysqli_query($conn, "INSERT INTO friends (friend_email, profile_name, password, date_started) VALUES ('$email', '$name', '$password', CURRENT_TIMESTAMP())")) {
+                // Query to insert new account into database
+                if (@mysqli_query($conn, "INSERT INTO friends (friend_email, profile_name, password, date_started, num_of_friends) VALUES ('$email', '$name', '$password', CURRENT_TIMESTAMP(), 0)")) {
                     $get_user = @mysqli_query($conn, "SELECT friend_id, friend_email, profile_name FROM friends WHERE friend_email = '$email' AND password = '$password';");
                     if ($get_user) {
                         $user = mysqli_fetch_assoc($get_user);
@@ -43,6 +54,7 @@
                         $_SESSION["profile_name"] = $user["profile_name"];
                         header("location: friendadd.php");
                     } else {
+                        // No connection than error
                         $err_msg = $err_msg . "
                                 Register failed, try again later. <br/>
                                 Error: " . htmlspecialchars(addslashes($conn->error)) . " <br/>
@@ -56,6 +68,7 @@
             $errors['missing'] = "Missing required fields";
         }
     }
+    @mysqli_close($conn);
 ?>
 
 <!doctype html>
@@ -116,9 +129,15 @@
                         <p class="text-red-500 text-xs mt-1"><?php echo $errors['confirm_password']; ?></p>
                     <?php endif; ?>
                 </div>
-                <div class="text-sm flex items-center">
-                    <button type="reset" class="text-gray-300"><span class="material-symbols-outlined">refresh</span>Reset
-                    </button>
+                <div class="grid grid-cols-2 gap-24">
+                    <div class="text-sm">
+                        <button type="reset" class="flex text-gray-300 items-center"><span
+                                    class="material-symbols-outlined">refresh</span>Reset
+                        </button>
+                    </div>
+                    <div class="text-sm flex text-gray-300 items-center">
+                        <a href="index.php">Back to homepage</a>
+                    </div>
                 </div>
                 <button type="submit"
                         class="w-full text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 dark:focus:ring-blue-800">
